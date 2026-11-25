@@ -2,44 +2,50 @@ const form = document.getElementById('note-form');
 const input = document.getElementById('note-input');
 const list = document.getElementById('notes-list');
 
-// 1. Load from localStorage
+// Load notes from browser storage, or start with an empty array
 let notes = JSON.parse(localStorage.getItem('myNotes')) || [];
 
-// 2. A function to REDRAW the screen based on the notes array
+// This function draws the notes on the screen
 function renderNotes() {
-    list.innerHTML = ''; // Clear the screen first
+    list.innerHTML = ''; // Clear the list first so we don't duplicate
+    
     notes.forEach((noteText, index) => {
         const newNote = document.createElement('li');
-        newNote.textContent = noteText;
-        newNote.style.marginBottom = "10px";
-
+        
+        // Create a span for the text so the delete button stays on the right
+        const textSpan = document.createElement('span');
+        textSpan.textContent = noteText;
+        
         const deleteBtn = document.createElement('button');
         deleteBtn.textContent = 'Delete';
-        deleteBtn.style.marginLeft = '10px';
+        deleteBtn.className = 'delete-btn'; // We added this class in CSS!
 
+        // When delete is clicked
         deleteBtn.addEventListener('click', function() {
-            notes.splice(index, 1); // Remove from array
-            localStorage.setItem('myNotes', JSON.stringify(notes)); // Update storage
-            renderNotes(); // Redraw the screen! (This fixes the bug)
+            notes.splice(index, 1); // Remove the note from our list
+            localStorage.setItem('myNotes', JSON.stringify(notes)); // Save to storage
+            renderNotes(); // Redraw the list to update the screen
         });
 
+        newNote.appendChild(textSpan);
         newNote.appendChild(deleteBtn);
         list.appendChild(newNote);
     });
 }
 
-// 3. Draw notes when the page loads
+// Draw any saved notes when the page loads
 renderNotes();
 
-// 4. Add a new note
+// When you click "Add"
 form.addEventListener('submit', function(event) {
     event.preventDefault(); 
     const noteText = input.value;
+
     if (noteText === "") return; 
 
     notes.push(noteText); // Add to array
-    localStorage.setItem('myNotes', JSON.stringify(notes)); // Save to storage
-    
+    localStorage.setItem('myNotes', JSON.stringify(notes)); // Save
     renderNotes(); // Redraw the screen
-    input.value = ""; // Clear input
+    
+    input.value = ""; // Clear the input box
 });
