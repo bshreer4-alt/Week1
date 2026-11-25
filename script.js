@@ -1,39 +1,45 @@
-// 1. Tell JavaScript to find the HTML elements we want to use
 const form = document.getElementById('note-form');
 const input = document.getElementById('note-input');
 const list = document.getElementById('notes-list');
 
-// 2. Listen for the "submit" event (when the user clicks Add or presses Enter)
-form.addEventListener('submit', function(event) {
-    
-    // 3. Stop the page from refreshing (this is the default behavior of forms)
-    event.preventDefault(); 
+// 1. Load from localStorage
+let notes = JSON.parse(localStorage.getItem('myNotes')) || [];
 
-    // 4. Get the text the user typed inside the input box
-    const noteText = input.value;
+// 2. A function to REDRAW the screen based on the notes array
+function renderNotes() {
+    list.innerHTML = ''; // Clear the screen first
+    notes.forEach((noteText, index) => {
+        const newNote = document.createElement('li');
+        newNote.textContent = noteText;
+        newNote.style.marginBottom = "10px";
 
-    // 5. If the input is empty, do nothing (don't add blank notes)
-    if (noteText === "") {
-        return; 
-    }
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.style.marginLeft = '10px';
 
-    // 6. Create a new list item (li) and a delete button
-    const newNote = document.createElement('li');
-    newNote.textContent = noteText;
+        deleteBtn.addEventListener('click', function() {
+            notes.splice(index, 1); // Remove from array
+            localStorage.setItem('myNotes', JSON.stringify(notes)); // Update storage
+            renderNotes(); // Redraw the screen! (This fixes the bug)
+        });
 
-    const deleteBtn = document.createElement('button');
-    deleteBtn.textContent = 'Delete';
-    deleteBtn.style.marginLeft = '10px';
-
-    // 7. Add a click event to the delete button so it removes the note
-    deleteBtn.addEventListener('click', function() {
-        newNote.remove();
+        newNote.appendChild(deleteBtn);
+        list.appendChild(newNote);
     });
+}
 
-    // 8. Put the delete button inside the note, and put the note inside the list
-    newNote.appendChild(deleteBtn);
-    list.appendChild(newNote);
+// 3. Draw notes when the page loads
+renderNotes();
 
-    // 9. Clear the input box so it's ready for the next note
-    input.value = "";
+// 4. Add a new note
+form.addEventListener('submit', function(event) {
+    event.preventDefault(); 
+    const noteText = input.value;
+    if (noteText === "") return; 
+
+    notes.push(noteText); // Add to array
+    localStorage.setItem('myNotes', JSON.stringify(notes)); // Save to storage
+    
+    renderNotes(); // Redraw the screen
+    input.value = ""; // Clear input
 });
