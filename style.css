@@ -86,3 +86,24 @@ li:hover {
 .delete-btn:hover {
   background: #cc0000;
 }
+
+/* This is a Media Query! It only applies to screens smaller than 500px (phones) */
+@media (max-width: 500px) {
+  body {
+    padding: 10px;
+    margin: 20px auto;
+  }
+
+  form {
+    flex-direction: column; /* Stacks the input and button on top of each other */
+  }
+
+  input {
+    width: 100%; /* Makes the input box full width */
+    box-sizing: border-box; /* Ensures padding doesn't break the width */
+  }
+
+  button[type="submit"] {
+    width: 100%; /* Makes the button full width */
+  }
+}
