@@ -2,61 +2,41 @@ const form = document.getElementById('note-form');
 const input = document.getElementById('note-input');
 const list = document.getElementById('notes-list');
 
-// Load notes from storage
-let notes = JSON.parse(localStorage.getItem('myNotes')) || [];
-
-function renderNotes() {
+// 1. Fetch notes from Python when the page loads
+async function loadNotes() {
     list.innerHTML = ''; // Clear the list first
     
-    // NEW CODE: If there are no notes, show a friendly message
-    if (notes.length === 0) {
-        const emptyMessage = document.createElement('li');
-        emptyMessage.textContent = "No notes yet. Add one above!";
-        emptyMessage.style.textAlign = "center";
-        emptyMessage.style.color = "#888";
-        emptyMessage.style.fontStyle = "italic";
-        emptyMessage.style.background = "transparent";
-        emptyMessage.style.boxShadow = "none";
-        list.appendChild(emptyMessage);
-        return; // Stop the function here
-    }
-
-    // Loop through notes and display them
-    notes.forEach((noteText, index) => {
+    // Ask Python for the notes
+    const response = await fetch('http://127.0.0.1:8000/notes');
+    const data = await response.json(); 
+    
+    // Draw them on the screen
+    data.notes.forEach(noteText => {
         const newNote = document.createElement('li');
-        
-        const textSpan = document.createElement('span');
-        textSpan.textContent = noteText;
-        
-        const deleteBtn = document.createElement('button');
-        deleteBtn.textContent = 'Delete';
-        deleteBtn.className = 'delete-btn'; 
-
-        deleteBtn.addEventListener('click', function() {
-            notes.splice(index, 1); 
-            localStorage.setItem('myNotes', JSON.stringify(notes)); 
-            renderNotes(); 
-        });
-
-        newNote.appendChild(textSpan);
-        newNote.appendChild(deleteBtn);
+        newNote.textContent = noteText;
         list.appendChild(newNote);
     });
 }
 
-// Draw notes when the page loads
-renderNotes();
+// Load them immediately
+loadNotes();
 
-// When you click Add
-form.addEventListener('submit', function(event) {
-    event.preventDefault(); 
+// 2. Send a new note to Python when you click "Add"
+form.addEventListener('submit', async function(event) {
+    event.preventDefault();
     const noteText = input.value;
 
-    if (noteText === "") return; 
+    if (noteText === "") return;
 
-    notes.push(noteText);
-    localStorage.setItem('myNotes', JSON.stringify(notes));
-    renderNotes(); 
-    
-    input.value = ""; 
+    // Send the note to Python
+    await fetch('http://127.0.0.1:8000/notes', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ text: noteText })
+    });
+
+    input.value = ""; // Clear input box
+    loadNotes(); // Reload the list from Python to show the new note
 });

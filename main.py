@@ -1,7 +1,17 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+#Allows frontend to talk to backend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], # In production, we will change the * to actual website URL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # 1. This is our fake database (a simple Python list)
 notes_db = []
