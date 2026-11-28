@@ -17,4 +17,16 @@ You can try the live app here: [https://bshree4-alt.github.io/Week1/](https://bs
 - Vanilla JavaScript (DOM Manipulation)
 
 ## 👨‍💻 Author
-**Bshree** - [GitHub Profile](https://github.com/bshree4-alt)
+**Bindushree** - [GitHub Profile](https://github.com/bshree4-alt)
+
+## ⚙️ Backend API
+This project includes a custom Python backend built with **FastAPI**.
+- **GET `/notes`**: Retrieves all saved notes from the database.
+- **POST `/notes`**: Creates a new note and saves it to a JSON file.
+- **DELETE `/notes/{id}`**: Deletes a specific note by its ID.
+
+## 🚀 How to Run Locally
+1. Clone this repository.
+2. Install the required packages: `pip install fastapi uvicorn`
+3. Start the Python backend: `python -m uvicorn main:app --reload`
+4. Open `index.html` using VS Code's Live Server.
